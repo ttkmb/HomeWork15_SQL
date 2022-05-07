@@ -74,11 +74,25 @@ query_8 = """
 )
 """
 # print(connect(query_8))
+query_infinity = """
+                 CREATE TABLE types (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 types varchar(100)
+        )
+"""
+
+query_infinity_3 = """
+                   INSERT INTO types (types)
+                   SELECT DISTINCT animals.animal_type as types
+                   FROM animals
+        
+"""
+
 query_9 = """
-          INSERT INTO animals_breed(animal_id, breed_id)
+          INSERT INTO animals_breed (animal_id, breed_id)
           SELECT DISTINCT animals."index" as animal_id, breed.id as breed_id
           FROM animals
-          JOIN breed ON breed.id = animals."index"
+          JOIN breed ON breed.breed = animals.breed
 
 """
 # print(connect(query_9))
@@ -94,31 +108,32 @@ query_13 = """
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            age_upon_outcome VARCHAR(50),
            animal_id INTEGER,
-           animal_type varchar(50),
            "name" VARCHAR(50),
            date_of_birth varchar(50),
            outcome_id integer,
            breed_id integer,
+           type_id integer,
            FOREIGN KEY (outcome_id) REFERENCES outcome(id)
            FOREIGN KEY (breed_id) REFERENCES breed(id)
+           FOREIGN KEY (type_id) REFERENCES types(id)
            )
 """
 # print(connect(query_13))
 query_14 = """
-           INSERT INTO animals_finally (age_upon_outcome, animal_id, animal_type, "name", 
-           date_of_birth, outcome_id, breed_id)
-           SELECT DISTINCT animals.age_upon_outcome, animals.animal_id, animals.animal_type, animals."name", 
-           animals.date_of_birth, outcome.id, breed.id
+           INSERT INTO animals_finally (age_upon_outcome, animal_id, "name", 
+           date_of_birth, outcome_id, breed_id, type_id)
+           SELECT DISTINCT animals.age_upon_outcome, animals.animal_id, animals."name", 
+           animals.date_of_birth, outcome.id, breed.id, types.id
            FROM animals
-           JOIN outcome ON outcome.subtype = animals.outcome_subtype
+           LEFT JOIN outcome ON outcome.subtype = animals.outcome_subtype
            AND outcome.type = animals.outcome_type
            AND outcome.month = animals.outcome_month
            AND outcome.year = animals.outcome_year
-           JOIN breed ON breed.id = animals."index"
+           JOIN breed ON breed.breed = animals.breed
+           JOIN types ON types.types = animals.animal_type
     """
 # print(connect(query_14))
 
 
 if __name__ == '__main__':
     print(connect(query_14))
-
